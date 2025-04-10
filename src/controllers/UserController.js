@@ -16,7 +16,7 @@ class UserController {
   }
 
   // Get all users
-  static async getAll(req, res) {
+  static async getAllUsers(req, res) {
     try {
       const users = await prismaClient.usuario.findMany();
       res.status(200).json(users);
@@ -26,7 +26,7 @@ class UserController {
   }
 
   // Get user by ID (ID parsed to integer)
-  static async getById(req, res) {
+  static async getUserById(req, res) {
     const { id } = req.params;
 
     try {
@@ -45,12 +45,12 @@ class UserController {
   }
 
   // Update user by ID
-  static async update(req, res) {
+  static async updateUser(req, res) {
     const { id } = req.params;
     const { nome, telefone, email, senha } = req.body;
 
     try {
-      const user = await prismaClient.usuario.update({
+      const user = await prismaClient.usuario.updateUser({
         where: { id: parseInt(id) }, // Ensure ID is integer
         data: { nome, telefone, email, senha },
       });
@@ -62,11 +62,11 @@ class UserController {
   }
 
   // Delete user by ID
-  static async delete(req, res) {
+  static async deleteUser(req, res) {
     const { id } = req.params;
 
     try {
-      await prismaClient.usuario.delete({
+      await prismaClient.usuario.deleteUser({
         where: { id: parseInt(id) }, // Ensure ID is integer
       });
       res.status(204).send(); // Success with no content
