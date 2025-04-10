@@ -1,20 +1,27 @@
-const express = require('express');
-const router = express.Router();
-const itemController = require('../controllers/ItemController');
+import { Router } from 'express';
+import {
+  createItem,
+  getAllItems,
+  getItemById,
+  updateItemByCodigo,
+  deleteItemByCodigo,
+} from '.../controllers/ItemController.js';
+
+const router = Router();
 
 // Criar novo item
-router.post('/', itemController.createItem);
+router.post('/', createItem);
 
 // Listar todos os itens (com filtros e busca opcionais)
-router.get('/', itemController.getAllItems);
+router.get('/', getAllItems);
 
 // Buscar item por ID
-router.get('/:id', itemController.getItemById);
+router.get('/:id', getItemById);
 
-// Atualizar item pelo ID
-router.put('/:id', itemController.updateItemById);
+// Atualizar item pelo código único
+router.put('/editar/:codigo', updateItemByCodigo);
 
-// Remover item pelo ID
-router.delete('/:id', itemController.deleteItemById);
+// Remover item pelo código único
+router.delete('/remover/:codigo', deleteItemByCodigo);
 
-module.exports = router;
+export default router;
