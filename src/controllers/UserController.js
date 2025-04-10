@@ -2,11 +2,11 @@ import { prismaClient } from '../database/PrismaClient.js';
 
 class UserController {
   // Create new user
-  static async create(req, res) {
+  static async createUser(req, res) {
     const { nome, telefone, email, senha } = req.body;
 
     try {
-      const user = await prismaClient.usuario.create({
+      const user = await prismaClient.usuario.createUser({
         data: { nome, telefone, email, senha },
       });
       res.status(201).json(user);
