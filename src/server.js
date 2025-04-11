@@ -11,5 +11,5 @@ app.use(router);
 const PORT = process.env.PORT || 8888;
 
 app.listen(PORT, () => {
-    console.log("Running server");
-})
+    console.log("Running server on port", PORT);
+});
