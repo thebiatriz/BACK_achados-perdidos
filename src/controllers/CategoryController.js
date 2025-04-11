@@ -11,10 +11,10 @@ export default class CategoryController {
                 data: { nome },
             });
 
-            res.status(201).json(category);
+            res.status(201).json({sucess: true, message: "Categoria criada com sucesso", data: category});
         
         }catch(error){
-            res.status(400).json({error: "Error creating category", details: error.message});
+            res.status(400).json({sucess: false, error: "Erro ao criar categoria", details: error.message});
         }
     }
 
@@ -23,10 +23,10 @@ export default class CategoryController {
     static async findAll(req, res){
         try{
             const categories = await prismaClient.categoria.findMany();
-            return res.status(200).json(categories);
+            return res.status(200).json({sucess: true, message: "Categorias encontradas", data: categories});
         
         }catch(error){
-            res.status(500).json({error: "Error to search categories", details:error.message});
+            res.status(500).json({sucess: false, error: "Erro ao buscar categorias", details: error.message});
         }
     }
 
@@ -49,13 +49,13 @@ export default class CategoryController {
             })
 
             if(!category){
-                return res.status(404).json({error: "Category Not Found"});
+                return res.status(404).json({sucess: false, message: "Categoria não encontrada"});
             }
 
-            return res.status(200).json(category);
+            return res.status(200).json({sucess: true, message: "Categoria encontrada", data: category});
         
         }catch(error){
-            res.status(500).json({error: "Error to find category", details: error.message});
+            res.status(500).json({sucess: false, error: "Erro ao buscar categoria", details: error.message});
         }
     }
 
@@ -71,7 +71,7 @@ export default class CategoryController {
                 where: {id: parseInt(id)}
             })
             if(!category){
-                return res.status(404).json({error: "Category Not Found"});
+                return res.status(404).json({sucess: false, message: "Categoria não encontrada"});
             }
 
             // check if the category has items
@@ -80,17 +80,17 @@ export default class CategoryController {
             })
 
             if(items.length > 0){
-                return res.status(400).json({error: "Category has items, delete them first"});
+                return res.status(400).json({sucess: false, message: "Categoria não pode ser deletada pois possui itens"});
             }
 
             // delete the category
             await prismaClient.categoria.delete({
                 where: {id: parseInt(id)}
             })
-            return res.status(200).json({message: "Category deleted successfully"});
+            return res.status(200).json({sucess: true, message: "Categoria deletada com sucesso", data: category});
 
         }catch(error){
-            res.status(400).json({error: "Error deleting category", details: error.message});
+            res.status(400).json({sucess: false, error: "Erro ao deletar categoria", details: error.message});
         }
     }
     

@@ -1,13 +1,8 @@
 import { Router } from "express";
-import CategoryController from "../controllers/CategoryController.js";
+import categoryRoutes from "./categoryRoutes.js";
 
 const router = Router();
 
-// routes to the category
-router.post("/categoria", CategoryController.create);
-router.get("/categoria", CategoryController.findAll);
-router.get("/categoria/:id", CategoryController.findById);
-router.delete("/categoria/:id", CategoryController.delete);
-
+router.use("/api/categorias", categoryRoutes);
 
 export { router };
