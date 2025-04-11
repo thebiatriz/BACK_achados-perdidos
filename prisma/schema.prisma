@@ -41,5 +41,6 @@ model usuario {
   nome     String  @db.VarChar
   telefone String? @db.VarChar
   email    String  @unique @db.VarChar
+  senha    String  @db.VarChar
   item     item[]
 }
