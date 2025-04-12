@@ -31,6 +31,36 @@ export default class CategoryController {
     }
 
 
+    // update category by id
+    static async update(req, res){
+        const {id} = req.params;
+        const {nome} = req.body;
+
+        try{
+            // check if the category exists
+            const category = await prismaClient.categoria.findFirst({
+                where: {id: parseInt(id)}
+            })
+
+            if(!category){
+                return res.status(404).json({sucess: false, message: "Categoria não encontrada"});
+            }
+
+            // update the category
+            const updatedCategory = await prismaClient.categoria.update({
+                where: {id: parseInt(id)},
+                data: {nome}
+            })
+
+            return res.status(200).json({sucess: true, message: "Categoria atualizada com sucesso", data: updatedCategory});
+        
+        }catch(error){
+            res.status(500).json({sucess: false, error: "Erro ao atualizar categoria", details: error.message});
+        }
+
+    }
+
+
     //list category by id
     static async findById(req, res){
         const {id} = req.params;
