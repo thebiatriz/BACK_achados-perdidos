@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import UserController from '../controllers/UserController.js';
-import auth from '../middlewares/auth.js';
 
 const router = Router();
 

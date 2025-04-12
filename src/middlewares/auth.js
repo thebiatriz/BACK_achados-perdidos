@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 export default function(req, res, next) {
 
     try{
-        const authorization = req.headers;
+        const {authorization} = req.headers;
 
         if(!authorization){
             return res.status(401).json({ success: false, message: "Token não informado" });
