@@ -1,12 +1,16 @@
 import { prismaClient } from '../database/PrismaClient.js';
 
+// import libary crypto password
+import bcrypt from 'bcryptjs';
+
 class UserController {
   static async createUser(req, res) {
-    const { nome, telefone, email } = req.body;
+    const { nome, telefone, email, senha} = req.body;
 
     try {
+      const passEncrypt = bcrypt.hashSync(senha, 5);
       const user = await prismaClient.usuario.create({
-        data: { nome, telefone, email },
+        data: { nome, telefone, email, senha: passEncrypt},
       });
       res.status(201).json({ success: true, message: "Usuário criado com sucesso", data: user });
     } catch (error) {
@@ -65,7 +69,7 @@ class UserController {
 
 
   static async updateUser(req, res) {
-    const { id } = req.params;
+    const id = req.id;
     const { nome, telefone, email } = req.body;
 
     try {
@@ -81,7 +85,7 @@ class UserController {
   }
 
   static async deleteUser(req, res) {
-    const { id } = req.params;
+    const id = req.id;
 
     try {
       const user = await prismaClient.usuario.findUnique({
@@ -96,11 +100,14 @@ class UserController {
         where: { id: parseInt(id) },
       });
 
-      res.status(204).send();
+      res.status(200).json({ success: true, message: "Usuário deletado com sucesso", data: user });
     } catch (error) {
       res.status(400).json({ success: false, message: "Erro ao deletar usuário", details: error.message });
     }
   }
+
+
+
 }
 
 export default UserController;
