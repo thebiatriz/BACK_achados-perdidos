@@ -32,7 +32,7 @@ export default class CategoryController {
 
 
     // update category by id
-    static async updatedCategory(req, res){
+    static async updateCategory(req, res){
         const {id} = req.params;
         const {nome} = req.body;
 
