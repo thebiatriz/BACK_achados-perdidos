@@ -3,7 +3,7 @@ import {prismaClient} from "../database/PrismaClient.js";
 export default class CategoryController {
 
     // create a new category
-    static async create(req, res){
+    static async createCategory(req, res){
         const{ nome } = req.body;
         
         try{
@@ -20,7 +20,7 @@ export default class CategoryController {
 
 
     // list all categories
-    static async findAll(req, res){
+    static async findAllCategory(req, res){
         try{
             const categories = await prismaClient.categoria.findMany();
             return res.status(200).json({sucess: true, message: "Categorias encontradas", data: categories});
@@ -32,7 +32,7 @@ export default class CategoryController {
 
 
     // update category by id
-    static async update(req, res){
+    static async updatedCategory(req, res){
         const {id} = req.params;
         const {nome} = req.body;
 
@@ -62,7 +62,7 @@ export default class CategoryController {
 
 
     //list category by id
-    static async findById(req, res){
+    static async findCategoryById(req, res){
         const {id} = req.params;
 
         try{
@@ -92,7 +92,7 @@ export default class CategoryController {
 
 
     // delete category by id
-    static async delete(req, res){
+    static async deleteCategory(req, res){
         const {id} = req.params;
 
         try{
