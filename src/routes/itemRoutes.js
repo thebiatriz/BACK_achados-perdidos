@@ -1,27 +1,33 @@
-import { Router } from 'express';
+import { Router } from "express";
 import {
   createItem,
   getAllItems,
   getItemById,
-  updateItemByCodigo,
-  deleteItemByCodigo,
-} from '.../controllers/ItemController.js';
+  updateItem,
+  deleteItem,
+  getUserItems,
+} from "../controllers/ItemController.js";
+
+import auth from "../middlewares/auth.js";
 
 const router = Router();
 
-// Criar novo item
-router.post('/', createItem);
+// Create a new item
+router.post("/criar/", auth, createItem);
 
-// Listar todos os itens (com filtros e busca opcionais)
-router.get('/', getAllItems);
+// List all items (with filters and indirect search)
+router.get("/", getAllItems);
 
-// Buscar item por ID
-router.get('/:id', getItemById);
+// Get item by ID
+router.get("/:id", getItemById);
 
-// Atualizar item pelo código único
-router.put('/editar/:codigo', updateItemByCodigo);
+// Update item by ID
+router.put("/atualizar/:id", auth, updateItem);
 
-// Remover item pelo código único
-router.delete('/remover/:codigo', deleteItemByCodigo);
+// Delete item by ID
+router.delete("/deletar/:id", auth, deleteItem);
+
+// List all items of a user
+router.get("/conta/meus-itens/", auth, getUserItems);
 
 export default router;

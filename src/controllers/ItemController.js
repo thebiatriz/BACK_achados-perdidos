@@ -1,177 +1,211 @@
 // controllers/ItemController.js
 import { PrismaClient } from '@prisma/client';
-import { v4 as uuidv4 } from 'uuid';
 
 const prisma = new PrismaClient();
 
-// Criar novo item
+// Create new item
 export const createItem = async (req, res) => {
-  try {
-    const {
-      nome,
-      data,
-      rua,
-      bairro,
-      cidade,
-      referencia,
-      foto,
-      status,
-      usuarioId,
-      categoriaId,
-    } = req.body;
+    try {
 
-    const novoItem = await prisma.item.create({
-      data: {
-        nome,
-        data: data ? new Date(data) : undefined,
-        rua,
-        bairro,
-        cidade,
-        referencia,
-        foto,
-        status,
-        usuario_id: usuarioId,
-      },
-    });
+        const usuarioId = req.id;
 
-    await prisma.item_categoria.create({
-      data: {
-        item_id: novoItem.id,
-        categoria_id: categoriaId,
-      },
-    });
+        const {
+            nome,
+            data,
+            rua,
+            bairro,
+            cidade,
+            referencia,
+            foto,
+            status,
+            categoriaId,
+        } = req.body;
 
-    res.status(201).json({ mensagem: 'Item criado com sucesso', item: novoItem });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ erro: 'Erro ao criar item' });
-  }
-};
+        const novoItem = await prisma.item.create({
+            data: {
+                nome,
+                data: data ? new Date(data) : undefined,
+                rua,
+                bairro,
+                cidade,
+                referencia,
+                foto,
+                status,
+                usuario_id: usuarioId,
+            },
+        });
 
-// Listar todos os itens
-export const getAllItems = async (req, res) => {
-  try {
-    const { status, categoriaId, busca } = req.query;
+        await prisma.item_categoria.create({
+            data: {
+                item_id: novoItem.id,
+                categoria_id: categoriaId,
+            },
+        });
 
-    const itens = await prisma.item.findMany({
-      where: {
-        status: status ? parseInt(status) : undefined,
-        item_categoria: categoriaId
-          ? {
-              some: {
-                categoria_id: parseInt(categoriaId),
-              },
-            }
-          : undefined,
-        OR: busca
-          ? [
-              { nome: { contains: busca, mode: 'insensitive' } },
-              { cidade: { contains: busca, mode: 'insensitive' } },
-              { bairro: { contains: busca, mode: 'insensitive' } },
-              { rua: { contains: busca, mode: 'insensitive' } },
-              { referencia: { contains: busca, mode: 'insensitive' } },
-            ]
-          : undefined,
-      },
-      include: {
-        item_categoria: {
-          include: {
-            categoria: true,
-          },
-        },
-        usuario: {
-          select: { nome: true, telefone: true, email: true },
-        },
-      },
-      orderBy: { id: 'desc' },
-    });
-
-    res.json(itens);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ erro: 'Erro ao buscar itens' });
-  }
-};
-
-// Buscar item por ID
-export const getItemById = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const item = await prisma.item.findUnique({
-      where: { id: parseInt(id) },
-      include: {
-        item_categoria: {
-          include: { categoria: true },
-        },
-        usuario: {
-          select: { nome: true, telefone: true, email: true },
-        },
-      },
-    });
-
-    if (!item) return res.status(404).json({ erro: 'Item não encontrado' });
-
-    res.json(item);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ erro: 'Erro ao buscar item' });
-  }
-};
-
-// Atualizar item pelo ID
-export const updateItemByCodigo = async (req, res) => {
-  try {
-    const { codigo } = req.params;
-    const dadosAtualizados = req.body;
-
-    const item = await prisma.item.update({
-      where: { codigo },
-      data: {
-        nome: dadosAtualizados.nome,
-        data: dadosAtualizados.data ? new Date(dadosAtualizados.data) : undefined,
-        rua: dadosAtualizados.rua,
-        bairro: dadosAtualizados.bairro,
-        cidade: dadosAtualizados.cidade,
-        referencia: dadosAtualizados.referencia,
-        foto: dadosAtualizados.foto,
-        status: dadosAtualizados.status,
-        usuario_id: dadosAtualizados.usuarioId,
-      },
-    });
-
-    if (dadosAtualizados.categoriaId) {
-      await prisma.item_categoria.deleteMany({ where: { item_id: item.id } });
-      await prisma.item_categoria.create({
-        data: {
-          item_id: item.id,
-          categoria_id: dadosAtualizados.categoriaId,
-        },
-      });
+ return res.status(201).json({ success: true, message: "Item criado com sucesso", data: novoItem });    } catch (error) {
+        return res.status(400).json({ success: false, message: "Error ao criar item", details: error.message });
     }
-
-    res.json({ mensagem: 'Item atualizado', item });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ erro: 'Erro ao atualizar item' });
-  }
 };
 
-// Remover item pelo código
-export const deleteItemByCodigo = async (req, res) => {
-  try {
-    const { codigo } = req.params;
+// Get all items
+export const getAllItems = async (req, res) => {
+    try {
+        const { status, categoriaId, busca } = req.query;
 
-    const item = await prisma.item.findUnique({ where: { codigo } });
+        const itens = await prisma.item.findMany({
+            where: {
+                status: status ? parseInt(status) : undefined,
+                item_categoria: categoriaId
+                    ? {
+                        some: {
+                            categoria_id: parseInt(categoriaId),
+                        },
+                    }
+                    : undefined,
+                OR: busca
+                    ? [
+                        { nome: { contains: busca, mode: 'insensitive' } },
+                        { cidade: { contains: busca, mode: 'insensitive' } },
+                        { bairro: { contains: busca, mode: 'insensitive' } },
+                        { rua: { contains: busca, mode: 'insensitive' } },
+                        { referencia: { contains: busca, mode: 'insensitive' } },
+                    ]
+                    : undefined,
+            },
+            include: {
+                item_categoria: {
+                    include: {
+                        categoria: true,
+                    },
+                },
+                usuario: {
+                    select: { nome: true, telefone: true, email: true },
+                },
+            },
+            orderBy: { id: 'desc' },
+        });
 
-    if (!item) return res.status(404).json({ erro: 'Item não encontrado' });
+        return res.status(200).json({ success: true, message: "Itens encontrados", data: itens });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: "Error ao buscar itens", details: error.message });
+    }
+};
 
-    await prisma.item_categoria.deleteMany({ where: { item_id: item.id } });
-    await prisma.item.delete({ where: { codigo } });
+// Get item by ID
+export const getItemById = async (req, res) => {
+    try {
+        const { id } = req.params;
 
-    res.json({ mensagem: 'Item deletado com sucesso' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ erro: 'Erro ao deletar item' });
-  }
+        const item = await prisma.item.findUnique({
+            where: { id: parseInt(id) },
+            include: {
+                item_categoria: {
+                    include: { categoria: true },
+                },
+                usuario: {
+                    select: { nome: true, telefone: true, email: true },
+                },
+            },
+        });
+
+        if (!item) return res.status(404).json({ success: false, message: "Item não encontrado" });
+
+        return res.status(200).json({ success: true, message: "Itens encontrados", data: item });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: "Erro ao buscar item", details: error.message });
+    }
+};
+
+// Get all items of a user
+export const getUserItems = async (req, res) => {
+    try {
+        const usuarioId = req.id;
+
+        const itens = await prisma.item.findMany({
+            where: { usuario_id: usuarioId },
+            include: {
+                item_categoria: {
+                    include: { categoria: true },
+                },
+                usuario: {
+                    select: { nome: true, telefone: true, email: true },
+                },
+            },
+            orderBy: { id: 'desc' },
+        });
+
+        return res.status(200).json({ success: true, message: "Itens encontrados", data: itens });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: "Erro ao buscar itens", details: error.message });
+    }
+}
+
+
+// Update item by ID
+export const updateItem = async (req, res) => {
+    try {
+        const usuarioId = req.id;
+        const { id } = req.params;
+        const dadosAtualizados = req.body;
+
+        const item = await prisma.item.update({
+            where: { id: parseInt(id) },
+            data: {
+                nome: dadosAtualizados.nome,
+                data: dadosAtualizados.data ? new Date(dadosAtualizados.data) : undefined,
+                rua: dadosAtualizados.rua,
+                bairro: dadosAtualizados.bairro,
+                cidade: dadosAtualizados.cidade,
+                referencia: dadosAtualizados.referencia,
+                foto: dadosAtualizados.foto,
+                status: dadosAtualizados.status,
+                usuario_id: usuarioId,
+            },
+        });
+
+        if (dadosAtualizados.categoriaId) {
+            await prisma.item_categoria.deleteMany({
+                where: { item_id: item.id }
+            });
+            await prisma.item_categoria.create({
+                data: {
+                    item_id: item.id,
+                    categoria_id: dadosAtualizados.categoriaId,
+                },
+            });
+        }
+
+        return res.status(200).json({ success: true, message: "Item atualizado com sucesso", data: item });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: "Erro ao atualizar o item", details: error.message });
+    }
+};
+
+// Delete item by ID
+export const deleteItem = async (req, res) => {
+    try {
+
+        const usuarioId = req.id;
+        const { id } = req.params;
+        const item = await prisma.item.findUnique({
+            where: { id: parseInt(id) }
+        });
+
+        if (!item) return res.status(404).json({ success: false, message: "Item não encontrado" });
+
+        // Check if the user is the owner of the item
+        if (item.usuario_id !== usuarioId) {
+            return res.status(403).json({ success: false, message: "Você não tem permissão para deletar este item" });
+        }
+        
+        await prisma.item_categoria.deleteMany({
+            where: { item_id: item.id }
+        });
+
+        await prisma.item.delete({ where: { id: item.id } });
+
+        return res.status(200).json({ success: true, message: "Item deletado com sucesso", data: item });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: "Error ao deletar item", details: error.message });
+    }
 };
