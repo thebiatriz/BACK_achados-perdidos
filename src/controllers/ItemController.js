@@ -43,7 +43,6 @@ export const createItem = async (req, res) => {
         });
 
  return res.status(201).json({ success: true, message: "Item criado com sucesso", data: novoItem });    } catch (error) {
-        console.error(error);
         return res.status(400).json({ success: false, message: "Error ao criar item", details: error.message });
     }
 };
@@ -88,7 +87,6 @@ export const getAllItems = async (req, res) => {
 
         return res.status(200).json({ success: true, message: "Itens encontrados", data: itens });
     } catch (error) {
-        console.error(error);
         return res.status(400).json({ success: false, message: "Error ao buscar itens", details: error.message });
     }
 };
@@ -114,15 +112,13 @@ export const getItemById = async (req, res) => {
 
         return res.status(200).json({ success: true, message: "Itens encontrados", data: item });
     } catch (error) {
-        console.error(error);
         return res.status(400).json({ success: false, message: "Erro ao buscar item", details: error.message });
     }
 };
 
 // Get all items of a user
-export const getItensUser = async (req, res) => {
+export const getUserItems = async (req, res) => {
     try {
-        console.log("getItensUser");
         const usuarioId = req.id;
 
         const itens = await prisma.item.findMany({
@@ -140,7 +136,6 @@ export const getItensUser = async (req, res) => {
 
         return res.status(200).json({ success: true, message: "Itens encontrados", data: itens });
     } catch (error) {
-        console.error(error);
         return res.status(400).json({ success: false, message: "Erro ao buscar itens", details: error.message });
     }
 }
@@ -182,7 +177,6 @@ export const updateItem = async (req, res) => {
 
         return res.status(200).json({ success: true, message: "Item atualizado com sucesso", data: item });
     } catch (error) {
-        console.error(error);
         return res.status(400).json({ success: false, message: "Erro ao atualizar o item", details: error.message });
     }
 };
@@ -212,7 +206,6 @@ export const deleteItem = async (req, res) => {
 
         return res.status(200).json({ success: true, message: "Item deletado com sucesso", data: item });
     } catch (error) {
-        console.error(error);
         return res.status(400).json({ success: false, message: "Error ao deletar item", details: error.message });
     }
 };
