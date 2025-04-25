@@ -17,7 +17,7 @@ export default function(req, res, next) {
 
         // check if token is valid
         if(!id){
-            return res.staus(401).json({ success: false, message: "Token inválido" });
+            return res.status(401).json({ success: false, message: "Token inválido" });
         }
 
         // add id to request
